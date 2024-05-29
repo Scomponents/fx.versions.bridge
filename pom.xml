@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.intechcore.scomponents</groupId>
+    <artifactId>javafx-version-bridger</artifactId>
+    <version>0.0.1</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <javaVersion>8</javaVersion>
+        <javaVersionForLibs>-java${javaVersion}</javaVersionForLibs>
+        <maven.compiler.source>${javaVersion}</maven.compiler.source>
+        <maven.compiler.target>${javaVersion}</maven.compiler.target>
+        <itcReleasesUrl>https://nexus.intechcore.online/repository/maven-scomponents-releases-scell/</itcReleasesUrl>
+    </properties>
+
+    <modules>
+        <module>javafx-version-bridger${javaVersionForLibs}</module>
+    </modules>
+
+    <distributionManagement>
+        <repository>
+            <id>itc-releases</id>
+            <url>${itcReleasesUrl}</url>
+        </repository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>itc-releases</id>
+            <url>${itcReleasesUrl}</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <executions>
+                    <execution>
+                        <id>set-variables-in-pom</id>
+                        <configuration>
+                            <flattenMode>bom</flattenMode>
+                        </configuration>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>BuildOnJava8</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+        </profile>
+        <profile>
+            <id>BuildOnJava11</id>
+            <activation>
+                <jdk>[11,)</jdk>
+            </activation>
+            <properties>
+                <javaVersion>11</javaVersion>
+            </properties>
+        </profile>
+    </profiles>
+</project>
