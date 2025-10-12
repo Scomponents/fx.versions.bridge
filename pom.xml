@@ -5,9 +5,9 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.intechcore.scomponents</groupId>
-    <artifactId>javafx-version-bridger</artifactId>
-    <version>0.0.1</version>
+    <groupId>com.intechcore.scomponents.fx</groupId>
+    <artifactId>bridge</artifactId>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -19,7 +19,7 @@
     </properties>
 
     <modules>
-        <module>javafx-version-bridger${javaVersionForLibs}</module>
+        <module>bridge${javaVersionForLibs}</module>
     </modules>
 
     <distributionManagement>
@@ -68,6 +68,40 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.12.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.8</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -86,6 +120,28 @@
             <properties>
                 <javaVersion>11</javaVersion>
             </properties>
+        </profile>
+        <profile>
+            <id>mavencenralRelease</id>
+            <properties>
+                <itcReleasesId>central</itcReleasesId>
+                <itcReleasesUrl>https://central.sonatype.com/api/v1/publishing</itcReleasesUrl>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.8.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>false</autoPublish>
+                            <waitUntil>validated</waitUntil>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

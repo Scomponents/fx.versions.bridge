@@ -1,0 +1,13 @@
+## JavaFX Version Bridger
+
+This project includes software from the following third parties:
+
+### JavaFX Controls (for the `bridge-java11` module)
+
+- **License:** GNU General Public License, version 2, with the Classpath Exception
+- **Website:** https://openjfx.io/
+
+This project uses JavaFX Controls when built on JDK 11 or newer. The `bridge-java8` module has no external dependencies.
+
+A copy of the GPLv2 with Classpath Exception can be found at:
+https://openjdk.java.net/legal/gplv2+ce.html
