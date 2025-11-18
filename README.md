@@ -1,8 +1,8 @@
 # Intechcore JavaFX Versions Bridge
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Maven-Central](https://img.shields.io/maven-central/v/com.intechcore.scomponents.fx/bridge/0.1.0-java11)](https://central.sonatype.com/artifact/com.intechcore.scomponents.fx/bridge/0.1.0-java11)
-[![Maven-Central](https://img.shields.io/maven-central/v/com.intechcore.scomponents.fx/bridge/0.1.0-java8)](https://central.sonatype.com/artifact/com.intechcore.scomponents.fx/bridge/0.1.0-java8)
+[![Maven-Central](https://img.shields.io/maven-central/v/com.intechcore.scomponents.fx/bridge/0.1.1-java11)](https://central.sonatype.com/artifact/com.intechcore.scomponents.fx/bridge/0.1.1-java11)
+[![Maven-Central](https://img.shields.io/maven-central/v/com.intechcore.scomponents.fx/bridge/0.1.1-java8)](https://central.sonatype.com/artifact/com.intechcore.scomponents.fx/bridge/0.1.1-java8)
 [![Hits-of-Code](https://hitsofcode.com/github/Scomponents/fx.versions.bridge?branch=master)](https://hitsofcode.com/github/Scomponents/fx.versions.bridge/view?branch=master)
 
 This project provides a compatibility bridge for JavaFX, allowing you to write code that works with both Java 8 and Java 11+ versions of JavaFX.
@@ -34,7 +34,7 @@ To use the bridge in your own project, add the following dependency to your `pom
 <dependency>
     <groupId>com.intechcore.scomponents.fx</groupId>
     <artifactId>bridge</artifactId>
-    <version>0.1.0-java${java.version.major}</version>
+    <version>0.1.1-java${java.version.major}</version>
 </dependency>
 ```
 
