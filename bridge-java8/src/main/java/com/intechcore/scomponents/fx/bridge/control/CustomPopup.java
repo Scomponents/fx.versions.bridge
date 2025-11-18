@@ -28,7 +28,7 @@ public class CustomPopup extends PopupControl {
      *
      * @return the children of the popup
      */
-    protected ObservableList<Node> getChildren() {
+    public ObservableList<Node> getChildren() {
         return this.getContent();
     }
 }

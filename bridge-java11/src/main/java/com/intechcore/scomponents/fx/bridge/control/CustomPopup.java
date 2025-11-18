@@ -31,7 +31,7 @@ public class CustomPopup extends PopupControl {
      *
      * @return the children of the popup
      */
-    protected final ObservableList<Node> getChildren() {
+    public final ObservableList<Node> getChildren() {
         final Parent rootNode = getScene().getRoot();
         if (rootNode instanceof Group) {
             return ((Group)rootNode).getChildren();

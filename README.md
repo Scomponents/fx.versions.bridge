@@ -21,7 +21,7 @@ The bridge modules provide a thin layer of abstraction over the parts of the Jav
 To deploy the project, run the following command from the appropriate subdirectory (bridge-java8 or bridge-java11):
 
 ```bash
-mvn clean deploy -PmavencentralRelease
+mvn clean deploy -PmavencentralRelease -DjavaVersion=8
 ```
 
 To build `bridge-java8`, the `mvn` should be run with JAVA_HOME=/path/to/jdk8, and for the `bridge-java11` it should be JDK 11.

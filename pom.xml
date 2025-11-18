@@ -13,6 +13,7 @@
     <properties>
         <javaVersion>8</javaVersion>
         <javaVersionForLibs>-java${javaVersion}</javaVersionForLibs>
+        <lib.version>0.1.1-java${javaVersion}</lib.version>
         <maven.compiler.source>${javaVersion}</maven.compiler.source>
         <maven.compiler.target>${javaVersion}</maven.compiler.target>
         <itcReleasesUrl>https://nexus.intechcore.online/repository/maven-scomponents-releases-scell/</itcReleasesUrl>

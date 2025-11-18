@@ -15,7 +15,7 @@
     <url>https://github.com/Scomponents/fx.versions.bridge</url>
     <description>A compatibility bridge for JavaFX, allowing writing code that works with both Java 8 and Java 11+ versions of JavaFX (Java8 part)</description>
 
-    <version>0.1.0-java${javaVersion}</version>
+    <version>0.1.1-java${javaVersion}</version>
     <artifactId>bridge</artifactId>
     <packaging>jar</packaging>
 
