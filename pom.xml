@@ -13,13 +13,17 @@
     <properties>
         <javaVersion>8</javaVersion>
         <javaVersionForLibs>-java${javaVersion}</javaVersionForLibs>
-        <lib.version>0.1.1-java${javaVersion}</lib.version>
+        <lib.version.tag>0.2.0</lib.version.tag>
+        <lib.version>${lib.version.tag}${javaVersionForLibs}</lib.version>
         <maven.compiler.source>${javaVersion}</maven.compiler.source>
         <maven.compiler.target>${javaVersion}</maven.compiler.target>
-        <itcReleasesUrl>https://nexus.intechcore.online/repository/maven-scomponents-releases-scell/</itcReleasesUrl>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <itcReleasesId>central</itcReleasesId>
+        <itcReleasesUrl>https://central.sonatype.com/api/v1/publishing</itcReleasesUrl>
     </properties>
 
     <modules>
+        <module>bridge-common</module>
         <module>bridge${javaVersionForLibs}</module>
     </modules>
 
@@ -38,11 +42,116 @@
     </repositories>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>0.10.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.4.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>3.2.8</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>1.5.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.4.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.12.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.6.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>com.intechcore.scomponents.fx.bridge</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>com.intechcore.scomponents.fx:bridge-common</include>
+                                    <include>com.intechcore.scomponents.fx:bridge-${javaVersionForLibs}</include>
+                                </includes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/MANIFEST.MF</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <createSourcesJar>true</createSourcesJar>
+                            <shadeSourcesContent>true</shadeSourcesContent>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>clean-original-shade-files</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete quiet="true">
+                                    <fileset dir="${project.build.directory}" includes="original-*.jar"/>
+                                </delete>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.5.0</version>
                 <executions>
                     <execution>
                         <id>set-variables-in-pom</id>
@@ -59,10 +168,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
@@ -72,7 +181,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.12.0</version>
+                <configuration>
+                    <includeDependencySources>true</includeDependencySources>
+                    <dependencySourceIncludes>
+                        <dependencySourceInclude>com.intechcore.scomponents.fx:bridge-common</dependencySourceInclude>
+                    </dependencySourceIncludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -85,7 +199,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.2.8</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -108,12 +221,6 @@
 
     <profiles>
         <profile>
-            <id>BuildOnJava8</id>
-            <activation>
-                <jdk>1.8</jdk>
-            </activation>
-        </profile>
-        <profile>
             <id>BuildOnJava11</id>
             <activation>
                 <jdk>[11,)</jdk>
@@ -123,26 +230,10 @@
             </properties>
         </profile>
         <profile>
-            <id>mavencenralRelease</id>
-            <properties>
-                <itcReleasesId>central</itcReleasesId>
-                <itcReleasesUrl>https://central.sonatype.com/api/v1/publishing</itcReleasesUrl>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonatype.central</groupId>
-                        <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>0.8.0</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <publishingServerId>central</publishingServerId>
-                            <autoPublish>false</autoPublish>
-                            <waitUntil>validated</waitUntil>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
+            <id>testDesktopApp</id>
+            <modules>
+                <module>test-desktop-app</module>
+            </modules>
         </profile>
     </profiles>
 </project>

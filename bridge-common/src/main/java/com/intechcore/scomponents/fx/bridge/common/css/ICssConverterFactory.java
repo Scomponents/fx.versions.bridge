@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package com.intechcore.scomponents.fx.bridge.control;
+package com.intechcore.scomponents.fx.bridge.common.css;
 
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.control.PopupControl;
+import javafx.css.StyleConverter;
 
 /**
- * A custom popup control
+ * Factory interface for providing a {@link StyleConverter} instance.
+ * <p>
+ * Implementations supply a type-safe CSS style converter that can transform
+ * parsed CSS values into target property types.
  */
-public class CustomPopup extends PopupControl {
+public interface ICssConverterFactory {
     /**
-     * Gets the children of the popup
+     * Returns the {@link StyleConverter} managed by this factory.
      *
-     * @return the children of the popup
+     * @param <F> the source type
+     * @param <T> the target type
+     * @return the style converter
      */
-    public ObservableList<Node> getChildren() {
-        return this.getContent();
-    }
+    <F, T> StyleConverter<F, T> getConverter();
 }

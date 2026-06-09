@@ -16,20 +16,19 @@
 
 package com.intechcore.scomponents.fx.bridge.control;
 
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.control.PopupControl;
+import com.sun.javafx.scene.control.skin.ColorPickerSkin;
+import javafx.scene.control.ColorPicker;
 
 /**
- * A custom popup control
+ * A proxy for the color picker skin
  */
-public class CustomPopup extends PopupControl {
+public class ColorPickerSkinProxy extends ColorPickerSkin {
     /**
-     * Gets the children of the popup
+     * Creates a new color picker skin proxy
      *
-     * @return the children of the popup
+     * @param colorPicker the color picker
      */
-    public ObservableList<Node> getChildren() {
-        return this.getContent();
+    public ColorPickerSkinProxy(ColorPicker colorPicker) {
+        super(colorPicker);
     }
 }

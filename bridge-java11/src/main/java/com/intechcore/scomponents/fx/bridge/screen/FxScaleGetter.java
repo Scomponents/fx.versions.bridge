@@ -1,11 +1,11 @@
 /*
- * Copyright 2025 Intechcore GmbH
+ * Copyright (c) 2026-present, Intechcore GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.intechcore.scomponents.fx.bridge.skin;
 
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.skin.ColorPickerSkin;
+package com.intechcore.scomponents.fx.bridge.screen;
 
 /**
- * A proxy for the color picker skin
+ * A utility class to get the FX scale factor.
  */
-public class ColorPickerSkinProxy extends ColorPickerSkin {
+public final class FxScaleGetter {
     /**
-     * Creates a new color picker skin proxy
+     * Gets the horizontal scale factor of the primary screen.
      *
-     * @param control the color picker
+     * @return the horizontal scale factor.
      */
-    public ColorPickerSkinProxy(ColorPicker control) {
-        super(control);
+    public static float getFxScaleX() {
+        return com.sun.glass.ui.Screen.getMainScreen().getPlatformScaleX();
     }
 }

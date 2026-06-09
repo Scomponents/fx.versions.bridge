@@ -1,11 +1,11 @@
 /*
- * Copyright 2025 Intechcore GmbH
+ * Copyright (c) 2026-present, Intechcore GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.intechcore.scomponents.fx.bridge.helper;
+
+package com.intechcore.scomponents.fx.bridge.input;
 
 import javafx.scene.input.KeyCode;
 
 /**
  * A supplier for key codes
  */
-public class KeyCodeSupplier {
+public final class KeyCodeSupplier {
     /**
      * Gets the key code for a given key code
      *
@@ -28,6 +29,6 @@ public class KeyCodeSupplier {
      * @return the key code
      */
     public static int getKeyCode(KeyCode keyCode) {
-        return keyCode.getCode();
+        return keyCode.impl_getCode();
     }
 }

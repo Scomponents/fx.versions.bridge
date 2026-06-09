@@ -1,55 +1,115 @@
 # Intechcore JavaFX Versions Bridge
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Maven-Central](https://img.shields.io/maven-central/v/com.intechcore.scomponents.fx/bridge/0.1.1-java11)](https://central.sonatype.com/artifact/com.intechcore.scomponents.fx/bridge/0.1.1-java11)
-[![Maven-Central](https://img.shields.io/maven-central/v/com.intechcore.scomponents.fx/bridge/0.1.1-java8)](https://central.sonatype.com/artifact/com.intechcore.scomponents.fx/bridge/0.1.1-java8)
-[![Hits-of-Code](https://hitsofcode.com/github/Scomponents/fx.versions.bridge?branch=master)](https://hitsofcode.com/github/Scomponents/fx.versions.bridge/view?branch=master)
+[![Maven-Central](https://img.shields.io/maven-central/v/com.intechcore.scomponents.fx/bridge/0.2.0-java11)](https://central.sonatype.com/artifact/com.intechcore.scomponents.fx/bridge/0.2.0-java11)
+[![Maven-Central](https://img.shields.io/maven-central/v/com.intechcore.scomponents.fx/bridge/0.2.0-java8)](https://central.sonatype.com/artifact/com.intechcore.scomponents.fx/bridge/0.2.0-java8)
 
-This project provides a compatibility bridge for JavaFX, allowing you to write code that works with both Java 8 and Java 11+ versions of JavaFX.
+A compatibility bridge for working with **Java 8 JavaFX** and **Java 11+ JavaFX** across a single shared codebase.
 
-## How it works
+---
 
-The project uses Maven profiles to detect the active JDK version and build the appropriate bridge module.
+## The Problem
 
-- If you are using JDK 1.8, the `bridge-java8` module will be built.
-- If you are using JDK 11 or newer, the `bridge-java11` module will be built.
+JavaFX was bundled with the JDK up to version 8, then separated into a standalone module system in Java 11. Along the way, several internal APIs moved to different packages, some signatures changed, and a few classes were relocated or removed.
 
-The bridge modules provide a thin layer of abstraction over the parts of the JavaFX API that have changed between Java 8 and Java 11, allowing you to write code against a single, consistent API.
+If you maintain a codebase that needs to support both environments — legacy systems on JDK 8 and modern deployments on JDK 17+ — you'd normally need to fork your code or maintain parallel branches.
 
-## How to build
+## The Solution
 
-To deploy the project, run the following command from the appropriate subdirectory (bridge-java8 or bridge-java11):
+This bridge provides **drop-in wrapper classes** that normalise the differences. You write your application once, against a single API, and the bridge selects the correct implementation at compile time based on your JDK version.
+
+It works through simple **JDK-aware Maven profiles**:
+
+- On **JDK 8** (`1.8`), the `bridge-java8` module is built automatically.
+- On **JDK 11 or newer**, the `bridge-java11` module is built.
+
+Both modules expose the **same public API**, so your code never knows which JDK it's targeting.
+
+## How to Use in Your Project
+
+### 1. Add the dependency
+
+In your `pom.xml`, set a property for the Java major version and add the bridge:
+
+```xml
+<properties>
+    <javaVersion>8</javaVersion>
+    <javaVersionForLibs>-java${javaVersion}</javaVersionForLibs>
+    <lib.version.tag>0.2.0</lib.version.tag>
+    <lib.version>${lib.version.tag}${javaVersionForLibs}</lib.version>
+    <maven.compiler.source>${javaVersion}</maven.compiler.source>
+    <maven.compiler.target>${javaVersion}</maven.compiler.target>
+    <java.fx.version>19</java.fx.version>
+</properties>
+
+<dependencies>
+    <dependency>
+        <groupId>com.intechcore.scomponents.fx</groupId>
+        <artifactId>bridge</artifactId>
+        <version>${lib.version}</version>
+    </dependency>
+</dependencies>
+
+<profiles>
+    <profile>
+        <id>BuildOnJava11</id>
+        <activation>
+            <jdk>[11,)</jdk>
+        </activation>
+        <properties>
+            <javaVersion>11</javaVersion>
+        </properties>
+        <dependencies>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>${java.fx.version}</version>
+            </dependency>
+        </dependencies>
+    </profile>
+</profiles>
+```
+
+The bridge automatically resolves to `bridge-0.2.0-java8` or `bridge-0.2.0-java11` depending on the version you request.
+
+### 2. Write your code against the bridge API
+
+Import the bridge classes from `com.intechcore.scomponents.fx.bridge.*` and use them as you would the original JavaFX classes. The bridge handles the version-specific details internally.
+
+### 3. Build with the right JDK
+
+- For **Java 8 target**: build with `JAVA_HOME` pointing to JDK 8.
+- For **Java 11+ target**: build with `JAVA_HOME` pointing to JDK 11 or newer (17, 21, etc.).
 
 ```bash
-mvn clean deploy -PmavencentralRelease -DjavaVersion=8
+# Build the Java 11 variant
+JAVA_HOME=/path/to/jdk17 mvn clean package
+
+# Build the Java 8 variant
+JAVA_HOME=/path/to/jdk8   mvn clean package
 ```
 
-To build `bridge-java8`, the `mvn` should be run with JAVA_HOME=/path/to/jdk8, and for the `bridge-java11` it should be JDK 11.
+## Building the Project
 
-## How to use
+```bash
+# Full build
+mvn clean package
 
-To use the bridge in your own project, add the following dependency to your `pom.xml`:
+# Build with the test desktop app
+mvn clean package -PtestDesktopApp
 
-```xml
-<dependency>
-    <groupId>com.intechcore.scomponents.fx</groupId>
-    <artifactId>bridge</artifactId>
-    <version>0.1.1-java${java.version.major}</version>
-</dependency>
+# Deploy to Maven Central (requires GPG and Central credentials)
+mvn clean deploy -PmavencentralRelease
 ```
 
-You will also need to set the `java.version.major` property in your `pom.xml` to either `8` or `11`, depending on the version of Java you are using. For example:
+## The test desktop app
 
-```xml
-<properties>
-    <java.version.major>8</java.version.major>
-</properties>
-```
+The `testDesktopApp` profile builds the `test-desktop-app` module — a live JavaFX application that exercises all bridge features.
 
-or
+(On JDK 11+, you may need to add `--add-modules javafx.controls` JVM arguments.)
 
-```xml
-<properties>
-    <java.version.major>11</java.version.major>
-</properties>
-```
+The app shows a window that demonstrates each bridge feature with live output — key codes, CSS converters, color picker skinning, named key bindings, font loading, and custom popups.
+
+## License
+
+This project is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.intechcore.scomponents.fx</groupId>
+    <artifactId>test-desktop-app</artifactId>
+    <version>${lib.version}</version>
+    <packaging>jar</packaging>
+
+    <name>JavaFX Bridge Test Desktop Application</name>
+    <description>Example desktop application that demonstrates the JavaFX version bridge library
+        working with both Java 8 and Java 11+ versions of JavaFX simultaneously.</description>
+
+    <properties>
+        <javaVersion>8</javaVersion>
+        <javaVersionForLibs>-java${javaVersion}</javaVersionForLibs>
+        <lib.version.tag>0.2.0</lib.version.tag>
+        <lib.version>${lib.version.tag}${javaVersionForLibs}</lib.version>
+        <maven.compiler.source>${javaVersion}</maven.compiler.source>
+        <maven.compiler.target>${javaVersion}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.fx.version>19</java.fx.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.intechcore.scomponents.fx</groupId>
+            <artifactId>bridge</artifactId>
+            <version>${lib.version}</version>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>BuildOnJava11</id>
+            <activation>
+                <jdk>[11,)</jdk>
+            </activation>
+            <properties>
+                <javaVersion>11</javaVersion>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-controls</artifactId>
+                    <version>${java.fx.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <executions>
+                    <execution>
+                        <id>set-variables-in-pom</id>
+                        <configuration>
+                            <flattenMode>bom</flattenMode>
+                        </configuration>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>com.intechcore.scomponents.fx:bridge</include>
+                                </includes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.intechcore.scomponents.fx.bridge.example.TestDesktopApp</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
